@@ -96,6 +96,9 @@ func (s *Store) Subscribe(bus sdk.Bus) error {
 	s.mu.Unlock()
 
 	ch := make(chan sdk.Event, 256)
+	if payload, ok := sdk.GetInitialSession(); ok {
+		ch <- sdk.NewEvent("session.resume", payload)
+	}
 
 	bus.OnAll(func(ev sdk.Event) error {
 		switch ev.Topic {
